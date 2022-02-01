@@ -45,16 +45,29 @@ class MainActivity : AppCompatActivity() {
         trueButton.setOnClickListener() {
 //            displayToastAboveButton(trueButton, R.string.correct_toast)
             checkAnswer(true)
+            setDisableButton()
         }
         falseButton.setOnClickListener {
 //            displayToastAboveButton(falseButton, R.string.incorrect_toast)
             checkAnswer(false)
+            setDisableButton()
         }
         nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
             updateQuestion()
+            setEnableButton()
         }
         updateQuestion()
+    }
+
+    private fun setDisableButton() {
+        trueButton.isEnabled = false
+        falseButton.isEnabled = false
+    }
+
+    private fun setEnableButton() {
+        trueButton.isEnabled = true
+        falseButton.isEnabled = true
     }
 
     override fun onStart() {
@@ -83,8 +96,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
-        questionTextView.setText(questionTextResId)
+
+        // Регистрация сообщения с уровнем регистрации "debug"
+        Log.d(TAG, "Current question index: $currentIndex")
+        try {
+            val questionTextResId = questionBank[currentIndex].textResId
+            questionTextView.setText(questionTextResId)
+        } catch (ex: ArrayIndexOutOfBoundsException) {
+            // Регистрация сообщения с уровнем регистрации "error" с трассировкой стека исключений
+            Log.e(TAG, "Index was out of bounds", ex)
+        }
+
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
