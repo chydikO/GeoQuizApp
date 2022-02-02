@@ -10,7 +10,10 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 
+private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var trueButton: Button
@@ -19,45 +22,43 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prevButton: ImageButton
     private lateinit var questionTextView: TextView
 
-    companion object {
-        private const val TAG = "MainActivity"
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProviders.of(this).get(QuizViewModel::class.java)
     }
-
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
-
-    private var currentIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate(Bundle?) called")
+        Log.d(TAG, "onCreate(Bundle?) MainActivity called")
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
 
+        /*
+        val provider: ViewModelProvider = ViewModelProviders.of(this)
+        val quizViewModel = provider.get(QuizViewModel::class.java)
+        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
+        */
         initViews()
+        setClickListners()
+        updateQuestion()
+    }
 
+
+    private fun setClickListners() {
         trueButton.setOnClickListener() {
-//            displayToastAboveButton(trueButton, R.string.correct_toast)
+            //            displayToastAboveButton(trueButton, R.string.correct_toast)
             checkAnswer(true)
             setDisableButton()
         }
         falseButton.setOnClickListener {
-//            displayToastAboveButton(falseButton, R.string.incorrect_toast)
+            //            displayToastAboveButton(falseButton, R.string.incorrect_toast)
             checkAnswer(false)
             setDisableButton()
         }
         nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
             setEnableButton()
         }
-        updateQuestion()
     }
 
     private fun setDisableButton() {
@@ -96,11 +97,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-
-        // Регистрация сообщения с уровнем регистрации "debug"
-        Log.d(TAG, "Current question index: $currentIndex")
         try {
-            val questionTextResId = questionBank[currentIndex].textResId
+            val questionTextResId = quizViewModel.currentQuestionText
             questionTextView.setText(questionTextResId)
         } catch (ex: ArrayIndexOutOfBoundsException) {
             // Регистрация сообщения с уровнем регистрации "error" с трассировкой стека исключений
@@ -110,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
         val messageResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
         } else {
