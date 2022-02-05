@@ -1,5 +1,6 @@
 package com.chudnovskiy.geoquizapp
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: ImageButton
     private lateinit var prevButton: ImageButton
     private lateinit var questionTextView: TextView
+    private lateinit var hintsAvailableTextView: TextView
     private lateinit var cheatButton: Button
 
     private val quizViewModel: QuizViewModel by lazy {
@@ -73,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("StringFormatMatches")
     private fun setClickListners() {
         trueButton.setOnClickListener() {
             //            displayToastAboveButton(trueButton, R.string.correct_toast)
@@ -90,6 +93,12 @@ class MainActivity : AppCompatActivity() {
             setEnableButton()
         }
         cheatButton.setOnClickListener {
+            val possibilityOfHints = quizViewModel.usingHints()
+            hintsAvailableTextView.text = getString(R.string.hints_available, possibilityOfHints.toString())
+            if (possibilityOfHints > NUMBER_OF_HINTS) {
+                cheatButton.isEnabled = false
+                return@setOnClickListener
+            }
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
             /**
@@ -169,6 +178,7 @@ class MainActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.next_button)
         questionTextView = findViewById(R.id.question_text_view)
         cheatButton = findViewById(R.id.cheat_button)
+        hintsAvailableTextView = findViewById(R.id.hints_available_text_view)
     }
 
     // v is the Button view that you want the Toast to appear above

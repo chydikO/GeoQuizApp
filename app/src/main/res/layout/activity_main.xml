@@ -58,4 +58,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/cheat_button" />
+
+    <TextView
+        android:id="@+id/hints_available_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        tools:text="Hints Available"/>
 </LinearLayout>

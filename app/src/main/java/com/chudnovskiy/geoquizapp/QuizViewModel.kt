@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 
 private const val TAG = "QuizViewModel"
+const val NUMBER_OF_HINTS = 3
 
 class QuizViewModel : ViewModel() {
     var currentIndex = 0
     var isCheater = false
+    var hintsUsed = 0
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -23,8 +25,15 @@ class QuizViewModel : ViewModel() {
     val currentQuestionText: Int
         get() = questionBank[currentIndex].textResId
 
+    fun usingHints(): Int {
+        return ++hintsUsed
+    }
     fun moveToNext() {
         currentIndex = (currentIndex + 1) % questionBank.size
+    }
+
+    fun moveToPrev() {
+        currentIndex = (currentIndex - 1) % questionBank.size
     }
 
     init {
