@@ -9,7 +9,7 @@ const val NUMBER_OF_HINTS = 3
 class QuizViewModel : ViewModel() {
     var currentIndex = 0
     var isCheater = false
-    var hintsUsed = 0
+    var hintsUsed = 3
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -26,7 +26,7 @@ class QuizViewModel : ViewModel() {
         get() = questionBank[currentIndex].textResId
 
     fun usingHints(): Int {
-        return ++hintsUsed
+        return --hintsUsed
     }
     fun moveToNext() {
         currentIndex = (currentIndex + 1) % questionBank.size

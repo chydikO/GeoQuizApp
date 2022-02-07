@@ -11,10 +11,7 @@ import android.os.PersistableBundle
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -93,12 +90,7 @@ class MainActivity : AppCompatActivity() {
             setEnableButton()
         }
         cheatButton.setOnClickListener {
-            val possibilityOfHints = quizViewModel.usingHints()
-            hintsAvailableTextView.text = getString(R.string.hints_available, possibilityOfHints.toString())
-            if (possibilityOfHints > NUMBER_OF_HINTS) {
-                cheatButton.isEnabled = false
-                return@setOnClickListener
-            }
+            quizViewModel.usingHints()
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
             /**
@@ -134,6 +126,12 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume() called")
+        hintsAvailableTextView.text =
+            getString(R.string.hints_available, quizViewModel.hintsUsed.toString())
+        if (quizViewModel.hintsUsed == 0) {
+            cheatButton.isEnabled = false
+        }
+
     }
 
     override fun onPause() {
